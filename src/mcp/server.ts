@@ -1,9 +1,9 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import { BrewfatherClient } from "./client.js";
-import { registerBatchTools } from "./tools/batches.js";
-import { registerRecipeTools } from "./tools/recipes.js";
-import { registerInventoryTools } from "./tools/inventory.js";
+import { BrewfatherClient } from "./client";
+import { registerBatchTools } from "./tools/batches";
+import { registerRecipeTools } from "./tools/recipes";
+import { registerInventoryTools } from "./tools/inventory";
 
 const userId = process.env.BREWFATHER_USER_ID;
 const apiKey = process.env.BREWFATHER_API_KEY;

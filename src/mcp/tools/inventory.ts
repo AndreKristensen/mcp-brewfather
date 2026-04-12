@@ -1,15 +1,15 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { BrewfatherClient, ApiError } from "../client.js";
+import { BrewfatherClient, ApiError } from "../client";
 import {
   ListInventorySchema,
   GetInventoryItemSchema,
   UpdateInventoryItemSchema,
-} from "../schemas/inventory.js";
+} from "../schemas/inventory";
 import {
   formatInventoryList,
   formatInventoryItem,
   formatInventoryUpdateConfirmation,
-} from "../transforms/inventory.js";
+} from "../transforms/inventory";
 
 function errorText(err: unknown): string {
   if (err instanceof ApiError) return err.toUserMessage();

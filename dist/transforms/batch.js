@@ -7,22 +7,22 @@ exports.formatReadingsList = formatReadingsList;
 exports.formatBrewTracker = formatBrewTracker;
 exports.formatBatchList = formatBatchList;
 exports.formatUpdateConfirmation = formatUpdateConfirmation;
-const shared_js_1 = require("./shared.js");
+const shared_1 = require("./shared");
 function formatBatchSummary(batch, index) {
     const prefix = index != null ? `[${index + 1}] ` : "";
     const name = batch.name ?? "Unnamed Batch";
     const no = batch.batchNo ? ` (#${batch.batchNo})` : "";
     const style = batch.recipe?.style?.name ? ` — ${batch.recipe.style.name}` : "";
     const og = batch.measuredOg
-        ? `OG: ${(0, shared_js_1.formatGravity)(batch.measuredOg)} (measured)`
+        ? `OG: ${(0, shared_1.formatGravity)(batch.measuredOg)} (measured)`
         : batch.estimatedOg
-            ? `OG: ${(0, shared_js_1.formatGravity)(batch.estimatedOg)} (estimated)`
+            ? `OG: ${(0, shared_1.formatGravity)(batch.estimatedOg)} (estimated)`
             : "OG: Unknown";
     const abv = batch.measuredAbv
-        ? (0, shared_js_1.formatAbv)(batch.measuredAbv)
-        : (0, shared_js_1.formatAbv)(batch.estimatedAbv);
+        ? (0, shared_1.formatAbv)(batch.measuredAbv)
+        : (0, shared_1.formatAbv)(batch.estimatedAbv);
     const brewDate = batch.brewDate
-        ? `Brewed: ${(0, shared_js_1.formatDateShort)(batch.brewDate)}`
+        ? `Brewed: ${(0, shared_1.formatDateShort)(batch.brewDate)}`
         : "Not yet brewed";
     return `${prefix}"${name}"${no}${style} — ${batch.status} — ${og} — ${abv} — ${brewDate}`;
 }
@@ -40,48 +40,48 @@ function formatBatchDetail(batch) {
     if (batch.recipe?.name)
         lines.push(`Recipe: "${batch.recipe.name}"`);
     if (batch.tasteRating != null)
-        lines.push(`Taste: ${(0, shared_js_1.formatRating)(batch.tasteRating)}`);
+        lines.push(`Taste: ${(0, shared_1.formatRating)(batch.tasteRating)}`);
     if (batch.tasteNotes)
         lines.push(`Taste notes: ${batch.tasteNotes}`);
     lines.push("");
     // ── Timeline ──────────────────────────────────────────────────────────────
     lines.push("### Timeline");
-    lines.push(`Brew date: ${(0, shared_js_1.formatDate)(batch.brewDate)}`);
-    lines.push(`Fermentation start: ${(0, shared_js_1.formatDate)(batch.fermentationStartDate)}`);
-    lines.push(`Bottling/packaging: ${(0, shared_js_1.formatDate)(batch.bottlingDate)}`);
+    lines.push(`Brew date: ${(0, shared_1.formatDate)(batch.brewDate)}`);
+    lines.push(`Fermentation start: ${(0, shared_1.formatDate)(batch.fermentationStartDate)}`);
+    lines.push(`Bottling/packaging: ${(0, shared_1.formatDate)(batch.bottlingDate)}`);
     lines.push("");
     // ── Gravity & Fermentation ────────────────────────────────────────────────
     lines.push("### Gravity & Fermentation");
-    lines.push(`Original Gravity (OG): ${(0, shared_js_1.formatGravity)(batch.measuredOg)} measured / ${(0, shared_js_1.formatGravity)(batch.estimatedOg)} estimated`);
-    lines.push(`Final Gravity (FG): ${(0, shared_js_1.formatGravity)(batch.measuredFg)} measured / ${(0, shared_js_1.formatGravity)(batch.estimatedFg)} estimated`);
+    lines.push(`Original Gravity (OG): ${(0, shared_1.formatGravity)(batch.measuredOg)} measured / ${(0, shared_1.formatGravity)(batch.estimatedOg)} estimated`);
+    lines.push(`Final Gravity (FG): ${(0, shared_1.formatGravity)(batch.measuredFg)} measured / ${(0, shared_1.formatGravity)(batch.estimatedFg)} estimated`);
     if (batch.measuredFirstWortGravity)
-        lines.push(`First Wort Gravity: ${(0, shared_js_1.formatGravity)(batch.measuredFirstWortGravity)}`);
+        lines.push(`First Wort Gravity: ${(0, shared_1.formatGravity)(batch.measuredFirstWortGravity)}`);
     if (batch.measuredPreBoilGravity)
-        lines.push(`Pre-Boil Gravity: ${(0, shared_js_1.formatGravity)(batch.measuredPreBoilGravity)}`);
+        lines.push(`Pre-Boil Gravity: ${(0, shared_1.formatGravity)(batch.measuredPreBoilGravity)}`);
     if (batch.measuredPostBoilGravity)
-        lines.push(`Post-Boil Gravity: ${(0, shared_js_1.formatGravity)(batch.measuredPostBoilGravity)}`);
+        lines.push(`Post-Boil Gravity: ${(0, shared_1.formatGravity)(batch.measuredPostBoilGravity)}`);
     if (batch.measuredMashPh)
         lines.push(`Mash pH: ${batch.measuredMashPh.toFixed(2)}`);
-    lines.push(`ABV: ${(0, shared_js_1.formatAbv)(batch.measuredAbv)} measured / ${(0, shared_js_1.formatAbv)(batch.estimatedAbv)} estimated`);
-    lines.push(`Attenuation: ${(0, shared_js_1.formatPercentage)(batch.measuredAttenuation)} measured`);
+    lines.push(`ABV: ${(0, shared_1.formatAbv)(batch.measuredAbv)} measured / ${(0, shared_1.formatAbv)(batch.estimatedAbv)} estimated`);
+    lines.push(`Attenuation: ${(0, shared_1.formatPercentage)(batch.measuredAttenuation)} measured`);
     lines.push("");
     // ── Bitterness & Color ────────────────────────────────────────────────────
     lines.push("### Character");
-    lines.push(`IBU: ${(0, shared_js_1.formatIbu)(batch.estimatedIbu)}`);
-    lines.push(`Color: ${(0, shared_js_1.formatColor)(batch.estimatedColor)}`);
+    lines.push(`IBU: ${(0, shared_1.formatIbu)(batch.estimatedIbu)}`);
+    lines.push(`Color: ${(0, shared_1.formatColor)(batch.estimatedColor)}`);
     lines.push("");
     // ── Volumes & Efficiency ──────────────────────────────────────────────────
     lines.push("### Volumes & Efficiency");
-    lines.push(`Batch size: ${(0, shared_js_1.formatVolume)(batch.measuredBatchSize)} measured / ${(0, shared_js_1.formatVolume)(batch.recipe?.batchSize)} target`);
-    lines.push(`Kettle size: ${(0, shared_js_1.formatVolume)(batch.measuredKettleSize)}`);
-    lines.push(`Boil size: ${(0, shared_js_1.formatVolume)(batch.measuredBoilSize)}`);
-    lines.push(`Fermenter top-up: ${(0, shared_js_1.formatVolume)(batch.measuredFermenterTopUp)}`);
-    lines.push(`Bottling size: ${(0, shared_js_1.formatVolume)(batch.measuredBottlingSize)}`);
+    lines.push(`Batch size: ${(0, shared_1.formatVolume)(batch.measuredBatchSize)} measured / ${(0, shared_1.formatVolume)(batch.recipe?.batchSize)} target`);
+    lines.push(`Kettle size: ${(0, shared_1.formatVolume)(batch.measuredKettleSize)}`);
+    lines.push(`Boil size: ${(0, shared_1.formatVolume)(batch.measuredBoilSize)}`);
+    lines.push(`Fermenter top-up: ${(0, shared_1.formatVolume)(batch.measuredFermenterTopUp)}`);
+    lines.push(`Bottling size: ${(0, shared_1.formatVolume)(batch.measuredBottlingSize)}`);
     if (batch.measuredBottlingTemp)
-        lines.push(`Bottling temp: ${(0, shared_js_1.formatTemp)(batch.measuredBottlingTemp)}`);
-    lines.push(`Brewhouse efficiency: ${(0, shared_js_1.formatPercentage)(batch.measuredEfficiency)}`);
-    lines.push(`Mash efficiency: ${(0, shared_js_1.formatPercentage)(batch.measuredMashEfficiency)}`);
-    lines.push(`Kettle efficiency: ${(0, shared_js_1.formatPercentage)(batch.measuredKettleEfficiency)}`);
+        lines.push(`Bottling temp: ${(0, shared_1.formatTemp)(batch.measuredBottlingTemp)}`);
+    lines.push(`Brewhouse efficiency: ${(0, shared_1.formatPercentage)(batch.measuredEfficiency)}`);
+    lines.push(`Mash efficiency: ${(0, shared_1.formatPercentage)(batch.measuredMashEfficiency)}`);
+    lines.push(`Kettle efficiency: ${(0, shared_1.formatPercentage)(batch.measuredKettleEfficiency)}`);
     lines.push("");
     // ── Carbonation ───────────────────────────────────────────────────────────
     if (batch.carbonationType || batch.carbonationTemp != null) {
@@ -89,7 +89,7 @@ function formatBatchDetail(batch) {
         if (batch.carbonationType)
             lines.push(`Method: ${batch.carbonationType}`);
         if (batch.carbonationTemp != null)
-            lines.push(`Temperature: ${(0, shared_js_1.formatTemp)(batch.carbonationTemp)}`);
+            lines.push(`Temperature: ${(0, shared_1.formatTemp)(batch.carbonationTemp)}`);
         if (batch.carbonationForce != null)
             lines.push(`Force: ${batch.carbonationForce.toFixed(1)} PSI`);
         if (batch.primingSugarEquiv != null)
@@ -126,7 +126,7 @@ function formatBatchDetail(batch) {
     if (batch.notes?.length > 0) {
         lines.push("### Log Entries");
         batch.notes.forEach((note) => {
-            const ts = (0, shared_js_1.formatDate)(note.timestamp);
+            const ts = (0, shared_1.formatDate)(note.timestamp);
             const status = note.status ? ` [${note.status}]` : "";
             lines.push(`${ts}${status}: ${note.note}`);
         });
@@ -137,7 +137,7 @@ function formatBatchDetail(batch) {
 function formatBatchFermentable(f) {
     const parts = [
         `  • ${f.name}`,
-        `${(0, shared_js_1.formatWeight)(f.amount)}`,
+        `${(0, shared_1.formatWeight)(f.amount)}`,
         `${f.percentage.toFixed(1)}%`,
     ];
     if (f.color)
@@ -151,7 +151,7 @@ function formatBatchFermentable(f) {
 function formatBatchHop(h) {
     const time = h.time != null ? ` @ ${h.time} ${h.timeUnit ?? "min"}` : "";
     const ibu = h.ibu ? ` — ${Math.round(h.ibu)} IBU` : "";
-    return `  • ${h.name} — ${(0, shared_js_1.formatWeight)(h.amount / 1000)} — ${h.type} — ${h.use}${time}${ibu} (${h.alpha.toFixed(1)}% AA)`;
+    return `  • ${h.name} — ${(0, shared_1.formatWeight)(h.amount / 1000)} — ${h.type} — ${h.use}${time}${ibu} (${h.alpha.toFixed(1)}% AA)`;
 }
 function formatBatchYeast(y) {
     const lab = y.laboratory ? ` (${y.laboratory}` : "";
@@ -168,12 +168,12 @@ function formatBatchMisc(m) {
     return `  • ${m.name} — ${m.amount} ${m.unit} — ${m.use}${time}`;
 }
 function formatReading(reading) {
-    const time = (0, shared_js_1.formatDate)(reading.time);
+    const time = (0, shared_1.formatDate)(reading.time);
     const parts = [`Time: ${time}`];
     if (reading.sg != null)
-        parts.push(`Gravity: ${(0, shared_js_1.formatGravity)(reading.sg)}`);
+        parts.push(`Gravity: ${(0, shared_1.formatGravity)(reading.sg)}`);
     if (reading.temp != null)
-        parts.push(`Temp: ${(0, shared_js_1.formatTemp)(reading.temp)}`);
+        parts.push(`Temp: ${(0, shared_1.formatTemp)(reading.temp)}`);
     if (reading.ph != null)
         parts.push(`pH: ${reading.ph.toFixed(2)}`);
     if (reading.pressure != null)

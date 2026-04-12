@@ -1,4 +1,4 @@
-import { RecipeSummary, RecipeDetail, Fermentable, Hop, Yeast, Misc, MashStep, FermentationStep } from "../types.js";
+import { RecipeSummary, RecipeDetail, Fermentable, Hop, Yeast, Misc, MashStep, FermentationStep } from "../types";
 import {
   formatGravity,
   formatAbv,
@@ -10,7 +10,7 @@ import {
   formatPercentage,
   formatMinutes,
   safeText,
-} from "./shared.js";
+} from "./shared";
 
 export function formatRecipeSummary(recipe: RecipeSummary, index?: number): string {
   const prefix = index != null ? `[${index + 1}] ` : "";

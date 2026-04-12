@@ -11,7 +11,7 @@ import {
   SensorReading,
   BrewTrackerState,
   InventoryType,
-} from "./types.js";
+} from "./types";
 
 export type InventoryItem = Fermentable | Hop | Misc | Yeast;
 

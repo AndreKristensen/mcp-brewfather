@@ -2,10 +2,10 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const mcp_js_1 = require("@modelcontextprotocol/sdk/server/mcp.js");
 const stdio_js_1 = require("@modelcontextprotocol/sdk/server/stdio.js");
-const client_js_1 = require("./client.js");
-const batches_js_1 = require("./tools/batches.js");
-const recipes_js_1 = require("./tools/recipes.js");
-const inventory_js_1 = require("./tools/inventory.js");
+const client_1 = require("./client");
+const batches_1 = require("./tools/batches");
+const recipes_1 = require("./tools/recipes");
+const inventory_1 = require("./tools/inventory");
 const userId = process.env.BREWFATHER_USER_ID;
 const apiKey = process.env.BREWFATHER_API_KEY;
 if (!userId || !apiKey) {
@@ -13,14 +13,14 @@ if (!userId || !apiKey) {
         "Set them in claude_desktop_config.json under the 'env' key, or export them in your shell.\n");
     process.exit(1);
 }
-const client = new client_js_1.BrewfatherClient(userId, apiKey);
+const client = new client_1.BrewfatherClient(userId, apiKey);
 const server = new mcp_js_1.McpServer({
     name: "brewfather",
     version: "0.1.0",
 });
-(0, batches_js_1.registerBatchTools)(server, client);
-(0, recipes_js_1.registerRecipeTools)(server, client);
-(0, inventory_js_1.registerInventoryTools)(server, client);
+(0, batches_1.registerBatchTools)(server, client);
+(0, recipes_1.registerRecipeTools)(server, client);
+(0, inventory_1.registerInventoryTools)(server, client);
 async function main() {
     const transport = new stdio_js_1.StdioServerTransport();
     await server.connect(transport);

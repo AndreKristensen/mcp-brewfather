@@ -1,5 +1,5 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { BrewfatherClient, ApiError } from "../client.js";
+import { BrewfatherClient, ApiError } from "../client";
 import {
   ListBatchesSchema,
   GetBatchSchema,
@@ -7,7 +7,7 @@ import {
   GetReadingsSchema,
   GetLastReadingSchema,
   GetBrewTrackerSchema,
-} from "../schemas/batches.js";
+} from "../schemas/batches";
 import {
   formatBatchList,
   formatBatchDetail,
@@ -15,7 +15,7 @@ import {
   formatReading,
   formatBrewTracker,
   formatUpdateConfirmation,
-} from "../transforms/batch.js";
+} from "../transforms/batch";
 
 function errorText(err: unknown): string {
   if (err instanceof ApiError) return err.toUserMessage();

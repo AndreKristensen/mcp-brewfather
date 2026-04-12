@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.formatInventoryItem = formatInventoryItem;
 exports.formatInventoryList = formatInventoryList;
 exports.formatInventoryUpdateConfirmation = formatInventoryUpdateConfirmation;
-const shared_js_1 = require("./shared.js");
+const shared_1 = require("./shared");
 // ── Fermentables ──────────────────────────────────────────────────────────────
 function formatFermentableItem(f, index) {
     const prefix = index != null ? `[${index + 1}] ` : "";
@@ -21,10 +21,10 @@ function formatStockFermentable(f) {
     if (f.inventory == null)
         return "Unknown";
     if (f.inventory < 0)
-        return `${(0, shared_js_1.formatWeight)(f.inventory)} (negative — check records)`;
+        return `${(0, shared_1.formatWeight)(f.inventory)} (negative — check records)`;
     if (f.inventory === 0)
         return "Out of stock";
-    return (0, shared_js_1.formatWeight)(f.inventory);
+    return (0, shared_1.formatWeight)(f.inventory);
 }
 // ── Hops ──────────────────────────────────────────────────────────────────────
 function formatHopAroma(h) {

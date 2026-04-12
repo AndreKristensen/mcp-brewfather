@@ -7,7 +7,7 @@ import {
   BatchHop,
   BatchMisc,
   BatchYeast,
-} from "../types.js";
+} from "../types";
 import {
   formatDate,
   formatDateShort,
@@ -21,7 +21,7 @@ import {
   formatPercentage,
   formatRating,
   safeText,
-} from "./shared.js";
+} from "./shared";
 
 export function formatBatchSummary(batch: BatchSummary, index?: number): string {
   const prefix = index != null ? `[${index + 1}] ` : "";

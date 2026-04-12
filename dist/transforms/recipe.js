@@ -3,15 +3,15 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.formatRecipeSummary = formatRecipeSummary;
 exports.formatRecipeDetail = formatRecipeDetail;
 exports.formatRecipeList = formatRecipeList;
-const shared_js_1 = require("./shared.js");
+const shared_1 = require("./shared");
 function formatRecipeSummary(recipe, index) {
     const prefix = index != null ? `[${index + 1}] ` : "";
     const style = recipe.style?.name ? ` — ${recipe.style.name}` : "";
-    const og = recipe.og ? `OG: ${(0, shared_js_1.formatGravity)(recipe.og)}` : "";
-    const abv = recipe.abv ? (0, shared_js_1.formatAbv)(recipe.abv) : "";
-    const ibu = recipe.ibu ? (0, shared_js_1.formatIbu)(recipe.ibu) : "";
+    const og = recipe.og ? `OG: ${(0, shared_1.formatGravity)(recipe.og)}` : "";
+    const abv = recipe.abv ? (0, shared_1.formatAbv)(recipe.abv) : "";
+    const ibu = recipe.ibu ? (0, shared_1.formatIbu)(recipe.ibu) : "";
     const stats = [og, abv, ibu].filter(Boolean).join(" | ");
-    const volume = (0, shared_js_1.formatVolume)(recipe.batchSize);
+    const volume = (0, shared_1.formatVolume)(recipe.batchSize);
     return `${prefix}"${recipe.name}"${style} — ${recipe.type} — ${volume} — ${stats}`;
 }
 function formatRecipeDetail(recipe) {
@@ -35,16 +35,16 @@ function formatRecipeDetail(recipe) {
     lines.push("");
     // ── Vitals ────────────────────────────────────────────────────────────────
     lines.push("### Vitals");
-    lines.push(`Batch size: ${(0, shared_js_1.formatVolume)(recipe.batchSize)} | Boil size: ${(0, shared_js_1.formatVolume)(recipe.boilSize)}`);
-    lines.push(`Boil time: ${(0, shared_js_1.formatMinutes)(recipe.boilTime)}`);
-    lines.push(`Efficiency: ${(0, shared_js_1.formatPercentage)(recipe.efficiency)}`);
-    lines.push(`OG: ${(0, shared_js_1.formatGravity)(recipe.og)}`);
-    lines.push(`FG: ${(0, shared_js_1.formatGravity)(recipe.fg)} (estimated: ${(0, shared_js_1.formatGravity)(recipe.fgEstimated)})`);
-    lines.push(`ABV: ${(0, shared_js_1.formatAbv)(recipe.abv)}`);
-    lines.push(`IBU: ${(0, shared_js_1.formatIbu)(recipe.ibu)}${recipe.ibuFormula ? ` (${recipe.ibuFormula})` : ""}`);
-    lines.push(`Color: ${(0, shared_js_1.formatColor)(recipe.color)}`);
+    lines.push(`Batch size: ${(0, shared_1.formatVolume)(recipe.batchSize)} | Boil size: ${(0, shared_1.formatVolume)(recipe.boilSize)}`);
+    lines.push(`Boil time: ${(0, shared_1.formatMinutes)(recipe.boilTime)}`);
+    lines.push(`Efficiency: ${(0, shared_1.formatPercentage)(recipe.efficiency)}`);
+    lines.push(`OG: ${(0, shared_1.formatGravity)(recipe.og)}`);
+    lines.push(`FG: ${(0, shared_1.formatGravity)(recipe.fg)} (estimated: ${(0, shared_1.formatGravity)(recipe.fgEstimated)})`);
+    lines.push(`ABV: ${(0, shared_1.formatAbv)(recipe.abv)}`);
+    lines.push(`IBU: ${(0, shared_1.formatIbu)(recipe.ibu)}${recipe.ibuFormula ? ` (${recipe.ibuFormula})` : ""}`);
+    lines.push(`Color: ${(0, shared_1.formatColor)(recipe.color)}`);
     if (recipe.attenuation)
-        lines.push(`Attenuation: ${(0, shared_js_1.formatPercentage)(recipe.attenuation)}`);
+        lines.push(`Attenuation: ${(0, shared_1.formatPercentage)(recipe.attenuation)}`);
     if (recipe.buGuRatio)
         lines.push(`BU:GU ratio: ${recipe.buGuRatio.toFixed(2)}`);
     if (recipe.diastaticPower)
@@ -55,7 +55,7 @@ function formatRecipeDetail(recipe) {
         lines.push("### Carbonation");
         lines.push(`Target: ${recipe.carbonation.toFixed(1)} vol CO₂`);
         if (recipe.carbonationTemp != null)
-            lines.push(`Temperature: ${(0, shared_js_1.formatTemp)(recipe.carbonationTemp)}`);
+            lines.push(`Temperature: ${(0, shared_1.formatTemp)(recipe.carbonationTemp)}`);
         if (recipe.primingSugarEquiv != null)
             lines.push(`Priming sugar equiv: ${recipe.primingSugarEquiv.toFixed(1)} g/L`);
         lines.push("");
@@ -68,7 +68,7 @@ function formatRecipeDetail(recipe) {
             lines.push(formatFermentable(f, total));
         });
         if (total)
-            lines.push(`  Total: ${(0, shared_js_1.formatWeight)(total)}`);
+            lines.push(`  Total: ${(0, shared_1.formatWeight)(total)}`);
         lines.push("");
     }
     // ── Hops ──────────────────────────────────────────────────────────────────
@@ -77,7 +77,7 @@ function formatRecipeDetail(recipe) {
         const total = recipe.hopsTotalAmount;
         recipe.hops.forEach((h) => lines.push(formatHop(h)));
         if (total)
-            lines.push(`  Total: ${(0, shared_js_1.formatWeight)(total / 1000)}`);
+            lines.push(`  Total: ${(0, shared_1.formatWeight)(total / 1000)}`);
         lines.push("");
     }
     // ── Yeasts ────────────────────────────────────────────────────────────────
@@ -130,7 +130,7 @@ function formatRecipeDetail(recipe) {
     // ── Equipment ─────────────────────────────────────────────────────────────
     if (recipe.equipment) {
         lines.push(`### Equipment: ${recipe.equipment.name}`);
-        lines.push(`  Batch: ${(0, shared_js_1.formatVolume)(recipe.equipment.batchSize)} | Boil: ${(0, shared_js_1.formatVolume)(recipe.equipment.boilSize)} | Efficiency: ${(0, shared_js_1.formatPercentage)(recipe.equipment.efficiency)}`);
+        lines.push(`  Batch: ${(0, shared_1.formatVolume)(recipe.equipment.batchSize)} | Boil: ${(0, shared_1.formatVolume)(recipe.equipment.boilSize)} | Efficiency: ${(0, shared_1.formatPercentage)(recipe.equipment.efficiency)}`);
         lines.push("");
     }
     // ── Notes ─────────────────────────────────────────────────────────────────
@@ -146,7 +146,7 @@ function formatFermentable(f, totalKg) {
     const color = f.color ? ` — ${Math.round(f.color)} SRM` : "";
     const supplier = f.supplier ? ` — ${f.supplier}` : "";
     const use = f.use && f.use !== "Mash" ? ` — ${f.use}` : "";
-    return `  • ${f.name}${supplier}: ${(0, shared_js_1.formatWeight)(f.amount)}${pct}${color}${use}`;
+    return `  • ${f.name}${supplier}: ${(0, shared_1.formatWeight)(f.amount)}${pct}${color}${use}`;
 }
 function formatHop(h) {
     const time = h.time != null
@@ -155,7 +155,7 @@ function formatHop(h) {
     const ibu = h.ibu ? ` — ${Math.round(h.ibu)} IBU` : "";
     const origin = h.origin ? ` (${h.origin})` : "";
     const temp = h.temp != null ? ` — stand at ${h.temp}°C` : "";
-    return `  • ${h.name}${origin} — ${(0, shared_js_1.formatWeight)(h.amount / 1000)} — ${h.type} — ${h.use}${time}${ibu} (${h.alpha.toFixed(1)}% AA)${temp}`;
+    return `  • ${h.name}${origin} — ${(0, shared_1.formatWeight)(h.amount / 1000)} — ${h.type} — ${h.use}${time}${ibu} (${h.alpha.toFixed(1)}% AA)${temp}`;
 }
 function formatYeastInRecipe(y) {
     const lab = y.laboratory ? `${y.laboratory} ` : "";
@@ -180,12 +180,12 @@ function formatMiscInRecipe(m) {
     return `  • ${m.name} — ${m.amount} ${m.unit} — ${m.type} — ${m.use}${time}${note}`;
 }
 function formatMashStep(s) {
-    return `  • ${s.name}: ${(0, shared_js_1.formatTemp)(s.stepTemp)} for ${s.stepTime} min (${s.type})`;
+    return `  • ${s.name}: ${(0, shared_1.formatTemp)(s.stepTemp)} for ${s.stepTime} min (${s.type})`;
 }
 function formatFermentationStep(s) {
     const ramp = s.rampTime ? ` (ramp: ${s.rampTime}h)` : "";
     const duration = s.stepTime ? ` for ${s.stepTime} day${s.stepTime !== 1 ? "s" : ""}` : "";
-    return `  • ${s.name}: ${(0, shared_js_1.formatTemp)(s.stepTemp)}${duration}${ramp}`;
+    return `  • ${s.name}: ${(0, shared_1.formatTemp)(s.stepTemp)}${duration}${ramp}`;
 }
 function formatRecipeList(recipes) {
     if (recipes.length === 0)

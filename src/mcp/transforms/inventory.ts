@@ -1,6 +1,6 @@
-import { Fermentable, Hop, Misc, Yeast } from "../types.js";
-import { InventoryItem } from "../client.js";
-import { formatWeight, formatTemp, formatPercentage } from "./shared.js";
+import { Fermentable, Hop, Misc, Yeast } from "../types";
+import { InventoryItem } from "../client";
+import { formatWeight, formatTemp, formatPercentage } from "./shared";
 
 // ── Fermentables ──────────────────────────────────────────────────────────────
 

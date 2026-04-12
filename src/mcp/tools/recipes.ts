@@ -1,7 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { BrewfatherClient, ApiError } from "../client.js";
-import { ListRecipesSchema, GetRecipeSchema } from "../schemas/recipes.js";
-import { formatRecipeList, formatRecipeDetail } from "../transforms/recipe.js";
+import { BrewfatherClient, ApiError } from "../client";
+import { ListRecipesSchema, GetRecipeSchema } from "../schemas/recipes";
+import { formatRecipeList, formatRecipeDetail } from "../transforms/recipe";
 
 function errorText(err: unknown): string {
   if (err instanceof ApiError) return err.toUserMessage();
