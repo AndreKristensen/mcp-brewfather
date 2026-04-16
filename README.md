@@ -28,20 +28,22 @@ The server uses standard OAuth 2.1 with PKCE. You authorize once through a login
 
 Connect this repo to [Vercel](https://vercel.com) and deploy. No build configuration needed — Vercel detects Next.js automatically.
 
-### 2. Set the server token
+### 2. Set environment variables
 
 In your Vercel project go to **Settings → Environment Variables** and add:
 
 | Variable | Value |
 |---|---|
 | `MCP_AUTH_TOKEN` | A strong random secret (see below) |
+| `BREWFATHER_USER_ID` | Found in **Brewfather → Settings → API** |
+| `BREWFATHER_API_KEY` | Found in **Brewfather → Settings → API** |
 
-Generate one:
+Generate the token:
 ```bash
 openssl rand -hex 32
 ```
 
-Redeploy after adding the variable.
+Redeploy after adding the variables.
 
 ### 3. Add the connector in Claude.ai
 
@@ -52,13 +54,9 @@ Redeploy after adding the variable.
 
 ### 4. Authorize
 
-When you first use the connector, Claude will open an authorization page on your Vercel deployment. Enter:
+When you first use the connector, Claude will open an authorization page on your Vercel deployment. Enter your **Server Token** (the `MCP_AUTH_TOKEN` value from step 2) and click **Authorize**.
 
-- **Server Token** — the `MCP_AUTH_TOKEN` value you set in step 2
-- **Brewfather User ID** — found in **Brewfather → Settings → API**
-- **Brewfather API Key** — found in **Brewfather → Settings → API**
-
-Click **Authorize**. Claude receives an access token (valid 1 hour) and a refresh token (valid 30 days). You won't need to re-authorize until the refresh token expires.
+Claude receives an access token (valid 1 hour) and a refresh token (valid 30 days). You won't need to re-authorize until the refresh token expires.
 
 ### How the auth works
 
