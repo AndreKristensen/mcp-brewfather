@@ -5,41 +5,36 @@ import { BrewfatherClient } from '@/src/mcp/client';
 import { registerBatchTools } from '@/src/mcp/tools/batches';
 import { registerRecipeTools } from '@/src/mcp/tools/recipes';
 import { registerInventoryTools } from '@/src/mcp/tools/inventory';
+import { verifyToken } from '@/lib/auth';
 
 const MCP_AUTH_TOKEN = process.env.MCP_AUTH_TOKEN;
+const BREWFATHER_USER_ID = process.env.BREWFATHER_USER_ID;
+const BREWFATHER_API_KEY = process.env.BREWFATHER_API_KEY;
 
-function extractCredentials(request: NextRequest): { userId: string; apiKey: string } | null {
+// Verifies the HMAC-signed OAuth access token issued by /api/mcp/token.
+function isAuthorized(request: NextRequest): boolean {
   try {
+    if (!MCP_AUTH_TOKEN) return false;
     const authHeader = request.headers.get('authorization');
-    if (!authHeader?.startsWith('Bearer ')) return null;
-
-    const decoded = Buffer.from(authHeader.slice(7), 'base64').toString('utf-8');
-
-    // Format: staticKey:userId:apiKey
-    const first = decoded.indexOf(':');
-    const second = decoded.indexOf(':', first + 1);
-    if (first <= 0 || second <= 0) return null;
-
-    const staticKey = decoded.slice(0, first);
-    const userId = decoded.slice(first + 1, second);
-    const apiKey = decoded.slice(second + 1);
-
-    if (!MCP_AUTH_TOKEN || staticKey !== MCP_AUTH_TOKEN) return null;
-    if (!userId || !apiKey) return null;
-
-    return { userId, apiKey };
+    if (!authHeader?.startsWith('Bearer ')) return false;
+    const payload = verifyToken(authHeader.slice(7), MCP_AUTH_TOKEN);
+    return payload?.type === 'access';
   } catch {
-    return null;
+    return false;
   }
 }
 
 async function handleRequest(request: NextRequest): Promise<Response> {
-  const creds = extractCredentials(request);
-  if (!creds) {
-    return new Response('Unauthorized: provide Authorization: Bearer base64(staticKey:userId:apiKey)', { status: 401 });
+  if (!isAuthorized(request) || !BREWFATHER_USER_ID || !BREWFATHER_API_KEY) {
+    // Return 401 with WWW-Authenticate so MCP clients initiate the OAuth flow.
+    // Claude will discover the authorization server via /.well-known/oauth-authorization-server.
+    return new Response('Unauthorized', {
+      status: 401,
+      headers: { 'WWW-Authenticate': 'Bearer' },
+    });
   }
 
-  const client = new BrewfatherClient(creds.userId, creds.apiKey);
+  const client = new BrewfatherClient(BREWFATHER_USER_ID, BREWFATHER_API_KEY);
   const server = new McpServer({ name: 'brewfather', version: '0.1.0' });
   registerBatchTools(server, client);
   registerRecipeTools(server, client);
