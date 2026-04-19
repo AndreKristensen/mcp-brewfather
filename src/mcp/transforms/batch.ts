@@ -7,6 +7,7 @@ import {
   BatchHop,
   BatchMisc,
   BatchYeast,
+  BatchMeasurement,
 } from "../types";
 import {
   formatDate,
@@ -40,7 +41,7 @@ export function formatBatchSummary(batch: BatchSummary, index?: number): string 
     ? `Brewed: ${formatDateShort(batch.brewDate)}`
     : "Not yet brewed";
 
-  return `${prefix}"${name}"${no}${style} — ${batch.status} — ${og} — ${abv} — ${brewDate}`;
+  return `${prefix}"${name}"${no}${style} — ${batch.status} — ${og} — ${abv} — ${brewDate} [ID: ${batch._id}]`;
 }
 
 export function formatBatchDetail(batch: BatchDetail): string {
@@ -50,12 +51,14 @@ export function formatBatchDetail(batch: BatchDetail): string {
 
   // ── Overview ──────────────────────────────────────────────────────────────
   lines.push(`## Batch: "${name}"${no}`);
+  lines.push(`ID: ${batch._id}`);
   lines.push(`Status: ${batch.status}`);
   if (batch.brewer) lines.push(`Brewer: ${batch.brewer}`);
   if (batch.recipe?.style?.name) lines.push(`Style: ${batch.recipe.style.name}`);
   if (batch.recipe?.name) lines.push(`Recipe: "${batch.recipe.name}"`);
   if (batch.tasteRating != null) lines.push(`Taste: ${formatRating(batch.tasteRating)}`);
   if (batch.tasteNotes) lines.push(`Taste notes: ${batch.tasteNotes}`);
+  if (batch.info) lines.push(`Info: ${batch.info}`);
   lines.push("");
 
   // ── Timeline ──────────────────────────────────────────────────────────────
@@ -130,9 +133,18 @@ export function formatBatchDetail(batch: BatchDetail): string {
   }
 
   if (batch.batchHops?.length > 0) {
-    lines.push("### Hops");
-    batch.batchHops.forEach((h) => lines.push(formatBatchHop(h)));
-    lines.push("");
+    const dryHops = batch.batchHops.filter((h) => h.use === "Dry Hop");
+    const otherHops = batch.batchHops.filter((h) => h.use !== "Dry Hop");
+    if (otherHops.length > 0) {
+      lines.push("### Hops");
+      otherHops.forEach((h) => lines.push(formatBatchHop(h)));
+      lines.push("");
+    }
+    if (dryHops.length > 0) {
+      lines.push("### Dry Hop Schedule");
+      dryHops.forEach((h) => lines.push(formatBatchHop(h)));
+      lines.push("");
+    }
   }
 
   if (batch.batchYeasts?.length > 0) {
@@ -161,6 +173,18 @@ export function formatBatchDetail(batch: BatchDetail): string {
       const status = note.status ? ` [${note.status}]` : "";
       lines.push(`${ts}${status}: ${note.note}`);
     });
+    lines.push("");
+  }
+
+  if (batch.measurements?.length > 0) {
+    lines.push("### Fermentation Log");
+    batch.measurements.forEach((m) => lines.push(formatBatchMeasurement(m)));
+    lines.push("");
+  }
+
+  if (batch.events?.length > 0) {
+    lines.push("### Events");
+    batch.events.forEach((e) => lines.push(`  • ${formatDate(e.date)}: ${e.message}`));
     lines.push("");
   }
 
@@ -200,6 +224,17 @@ function formatBatchYeast(y: BatchYeast): string {
 function formatBatchMisc(m: BatchMisc): string {
   const time = m.time != null ? ` @ ${m.time} ${m.timeUnit ?? "min"}` : "";
   return `  • ${m.name} — ${m.amount} ${m.unit} — ${m.use}${time}`;
+}
+
+function formatBatchMeasurement(m: BatchMeasurement): string {
+  const parts: string[] = [formatDate(m.time)];
+  if (m.sg != null) parts.push(`SG: ${formatGravity(m.sg)}`);
+  if (m.temp != null) parts.push(`Temp: ${formatTemp(m.temp)}`);
+  if (m.ph != null) parts.push(`pH: ${m.ph.toFixed(2)}`);
+  if (m.pressure != null) parts.push(`Pressure: ${m.pressure.toFixed(2)} PSI`);
+  if (m.type) parts.push(`[${m.type}]`);
+  if (m.comment) parts.push(`— ${m.comment}`);
+  return `  • ${parts.join(" | ")}`;
 }
 
 export function formatReading(reading: SensorReading): string {
