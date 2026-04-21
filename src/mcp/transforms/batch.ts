@@ -126,15 +126,34 @@ export function formatBatchDetail(batch: BatchDetail): string {
   }
 
   // ── Ingredients ───────────────────────────────────────────────────────────
-  if (batch.batchFermentables?.length > 0) {
+  // Use batch-level confirmed ingredients when available; fall back to the
+  // embedded recipe when the batch hasn't had ingredients confirmed yet.
+  const fermentables = batch.batchFermentables?.length > 0
+    ? batch.batchFermentables
+    : null;
+  const recipeFermentables = batch.recipe?.fermentables ?? [];
+
+  if (fermentables) {
     lines.push("### Fermentables");
-    batch.batchFermentables.forEach((f) => lines.push(formatBatchFermentable(f)));
+    fermentables.forEach((f) => lines.push(formatBatchFermentable(f)));
+    lines.push("");
+  } else if (recipeFermentables.length > 0) {
+    lines.push("### Fermentables (from recipe)");
+    recipeFermentables.forEach((f) => {
+      const pct = f.percentage != null ? ` (${f.percentage.toFixed(1)}%)` : "";
+      const color = f.color ? ` — ${Math.round(f.color)} SRM` : "";
+      const supplier = f.supplier ? ` — ${f.supplier}` : "";
+      lines.push(`  • ${f.name}${supplier}: ${formatWeight(f.amount)}${pct}${color}`);
+    });
     lines.push("");
   }
 
-  if (batch.batchHops?.length > 0) {
-    const dryHops = batch.batchHops.filter((h) => h.use === "Dry Hop");
-    const otherHops = batch.batchHops.filter((h) => h.use !== "Dry Hop");
+  const hops = batch.batchHops?.length > 0 ? batch.batchHops : null;
+  const recipeHops = batch.recipe?.hops ?? [];
+
+  if (hops) {
+    const dryHops = hops.filter((h) => h.use === "Dry Hop");
+    const otherHops = hops.filter((h) => h.use !== "Dry Hop");
     if (otherHops.length > 0) {
       lines.push("### Hops");
       otherHops.forEach((h) => lines.push(formatBatchHop(h)));
@@ -145,17 +164,58 @@ export function formatBatchDetail(batch: BatchDetail): string {
       dryHops.forEach((h) => lines.push(formatBatchHop(h)));
       lines.push("");
     }
+  } else if (recipeHops.length > 0) {
+    const dryHops = recipeHops.filter((h) => h.use === "Dry Hop");
+    const otherHops = recipeHops.filter((h) => h.use !== "Dry Hop");
+    if (otherHops.length > 0) {
+      lines.push("### Hops (from recipe)");
+      otherHops.forEach((h) => {
+        const time = h.time != null ? ` @ ${h.time} ${h.timeUnit ?? "min"}` : "";
+        const ibu = h.ibu ? ` — ${Math.round(h.ibu)} IBU` : "";
+        lines.push(`  • ${h.name} — ${formatWeight(h.amount / 1000)} — ${h.type} — ${h.use}${time}${ibu} (${h.alpha.toFixed(1)}% AA)`);
+      });
+      lines.push("");
+    }
+    if (dryHops.length > 0) {
+      lines.push("### Dry Hop Schedule (from recipe)");
+      dryHops.forEach((h) => {
+        const time = h.time != null ? ` @ day ${h.time}` : "";
+        lines.push(`  • ${h.name} — ${formatWeight(h.amount / 1000)} — ${h.type}${time} (${h.alpha.toFixed(1)}% AA)`);
+      });
+      lines.push("");
+    }
   }
 
-  if (batch.batchYeasts?.length > 0) {
+  const yeasts = batch.batchYeasts?.length > 0 ? batch.batchYeasts : null;
+  const recipeYeasts = batch.recipe?.yeasts ?? [];
+
+  if (yeasts) {
     lines.push("### Yeasts");
-    batch.batchYeasts.forEach((y) => lines.push(formatBatchYeast(y)));
+    yeasts.forEach((y) => lines.push(formatBatchYeast(y)));
+    lines.push("");
+  } else if (recipeYeasts.length > 0) {
+    lines.push("### Yeasts (from recipe)");
+    recipeYeasts.forEach((y) => {
+      const lab = y.laboratory ? ` (${y.laboratory}` : "";
+      const pid = y.productId ? ` ${y.productId})` : lab ? ")" : "";
+      lines.push(`  • ${y.name}${lab}${pid} — ${y.form}`);
+    });
     lines.push("");
   }
 
-  if (batch.batchMiscs?.length > 0) {
+  const miscs = batch.batchMiscs?.length > 0 ? batch.batchMiscs : null;
+  const recipeMiscs = batch.recipe?.miscs ?? [];
+
+  if (miscs) {
     lines.push("### Miscellaneous");
-    batch.batchMiscs.forEach((m) => lines.push(formatBatchMisc(m)));
+    miscs.forEach((m) => lines.push(formatBatchMisc(m)));
+    lines.push("");
+  } else if (recipeMiscs.length > 0) {
+    lines.push("### Miscellaneous (from recipe)");
+    recipeMiscs.forEach((m) => {
+      const time = m.time != null ? ` @ ${m.time} ${m.timeUnit ?? "min"}` : "";
+      lines.push(`  • ${m.name} — ${m.amount} ${m.unit} — ${m.use}${time}`);
+    });
     lines.push("");
   }
 

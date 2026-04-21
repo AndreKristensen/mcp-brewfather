@@ -52,7 +52,14 @@ export function registerBatchTools(server: McpServer, client: BrewfatherClient):
     },
     async (args) => {
       try {
-        const batch = await client.getBatch(args.id, { include: args.include });
+        // Always include recipe so hop schedule and fermentation profile are available
+        // even when batchHops/batchYeasts haven't been confirmed yet.
+        const include = args.include
+          ? args.include.includes("recipe")
+            ? args.include
+            : `${args.include},recipe`
+          : "recipe";
+        const batch = await client.getBatch(args.id, { include });
         return { content: [{ type: "text", text: formatBatchDetail(batch) }] };
       } catch (err) {
         return { content: [{ type: "text", text: errorText(err) }] };
