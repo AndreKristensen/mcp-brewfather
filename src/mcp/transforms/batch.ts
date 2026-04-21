@@ -178,9 +178,14 @@ export function formatBatchDetail(batch: BatchDetail): string {
     }
     if (dryHops.length > 0) {
       lines.push("### Dry Hop Schedule (from recipe)");
+      // Add fermentation context if available
+      const fermentation = batch.recipe?.fermentation;
+      if (fermentation?.steps && fermentation.steps.length > 0) {
+        lines.push("Fermentation profile: " + fermentation.steps.map((s) => `${s.name} @ ${s.stepTemp}°C`).join(" → "));
+      }
       dryHops.forEach((h) => {
-        const time = h.time != null ? ` @ day ${h.time}` : "";
-        lines.push(`  • ${h.name} — ${formatWeight(h.amount / 1000)} — ${h.type}${time} (${h.alpha.toFixed(1)}% AA)`);
+        const time = h.time != null ? ` — add @ day ${h.time} of fermentation` : "";
+        lines.push(`  • ${h.name} — ${formatWeight(h.amount / 1000)} — ${h.type} (${h.alpha.toFixed(1)}% AA)${time}`);
       });
       lines.push("");
     }
@@ -215,6 +220,18 @@ export function formatBatchDetail(batch: BatchDetail): string {
     recipeMiscs.forEach((m) => {
       const time = m.time != null ? ` @ ${m.time} ${m.timeUnit ?? "min"}` : "";
       lines.push(`  • ${m.name} — ${m.amount} ${m.unit} — ${m.use}${time}`);
+    });
+    lines.push("");
+  }
+
+  // ── Fermentation Profile ─────────────────────────────────────────────────
+  const fermentation = batch.recipe?.fermentation;
+  if (fermentation && fermentation.steps && fermentation.steps.length > 0) {
+    lines.push("### Fermentation Profile: " + fermentation.name);
+    fermentation.steps.forEach((s) => {
+      const ramp = s.rampTime ? ` (ramp: ${s.rampTime}h)` : "";
+      const duration = s.stepTime ? ` for ${s.stepTime} day${s.stepTime !== 1 ? "s" : ""}` : "";
+      lines.push(`  • ${s.name}: ${formatTemp(s.stepTemp)}${duration}${ramp}`);
     });
     lines.push("");
   }

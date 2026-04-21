@@ -59,7 +59,30 @@ export function registerBatchTools(server: McpServer, client: BrewfatherClient):
             ? args.include
             : `${args.include},recipe`
           : "recipe";
-        const batch = await client.getBatch(args.id, { include });
+        let batch = await client.getBatch(args.id, { include });
+
+        // Brewfather's ?include=recipe embeds only a recipe summary in the batch
+        // response — ingredient arrays (hops, fermentables, yeasts, miscs) and
+        // the fermentation profile are typically absent from the embedded object.
+        // When batch-level ingredients haven't been confirmed yet (batchHops is
+        // empty), fall back to a full recipe fetch so the dry hop schedule and
+        // fermentation profile are always available.
+        const batchHasIngredients =
+          (batch.batchHops?.length ?? 0) > 0 ||
+          (batch.batchFermentables?.length ?? 0) > 0;
+        const embeddedRecipeMissingIngredients =
+          (batch.recipe?.hops?.length ?? 0) === 0 &&
+          (batch.recipe?.fermentables?.length ?? 0) === 0;
+
+        if (!batchHasIngredients && embeddedRecipeMissingIngredients && batch.recipe?._id) {
+          try {
+            const fullRecipe = await client.getRecipe(batch.recipe._id);
+            batch = { ...batch, recipe: fullRecipe };
+          } catch {
+            // Best-effort — format with whatever we already have
+          }
+        }
+
         return { content: [{ type: "text", text: formatBatchDetail(batch) }] };
       } catch (err) {
         return { content: [{ type: "text", text: errorText(err) }] };
