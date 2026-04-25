@@ -47,41 +47,16 @@ export function registerBatchTools(server: McpServer, client: BrewfatherClient):
     {
       title: "Get Brewfather Batch",
       description:
-        "Get full details for a specific batch by ID, including measured gravities, volumes, efficiency, fermentables, hops, yeasts, notes, and timeline. Use 'include=recipe' to embed the full recipe.",
+        "Get full details for a specific batch by ID, including measured gravities, volumes, efficiency, fermentables, hops, yeasts, notes, and timeline.",
       inputSchema: GetBatchSchema,
     },
     async (args) => {
       try {
-        // Always include recipe so hop schedule and fermentation profile are available
-        // even when batchHops/batchYeasts haven't been confirmed yet.
-        const include = args.include
-          ? args.include.includes("recipe")
-            ? args.include
-            : `${args.include},recipe`
-          : "recipe";
-        let batch = await client.getBatch(args.id, { include });
-
-        // Brewfather's ?include=recipe embeds only a recipe summary in the batch
-        // response — ingredient arrays (hops, fermentables, yeasts, miscs) and
-        // the fermentation profile are typically absent from the embedded object.
-        // When batch-level ingredients haven't been confirmed yet (batchHops is
-        // empty), fall back to a full recipe fetch so the dry hop schedule and
-        // fermentation profile are always available.
-        const batchHasIngredients =
-          (batch.batchHops?.length ?? 0) > 0 ||
-          (batch.batchFermentables?.length ?? 0) > 0;
-        const embeddedRecipeMissingIngredients =
-          (batch.recipe?.hops?.length ?? 0) === 0 &&
-          (batch.recipe?.fermentables?.length ?? 0) === 0;
-
-        if (!batchHasIngredients && embeddedRecipeMissingIngredients && batch.recipe?._id) {
-          try {
-            const fullRecipe = await client.getRecipe(batch.recipe._id);
-            batch = { ...batch, recipe: fullRecipe };
-          } catch {
-            // Best-effort — format with whatever we already have
-          }
-        }
+        // Fetch without ?include=recipe — Brewfather's bare GET /batches/{id}
+        // already embeds the full recipe object. Passing ?include=recipe causes
+        // the API to return a stripped 6-field stub that omits all measured and
+        // estimated values (OG, FG, ABV, efficiency, etc.).
+        const batch = await client.getBatch(args.id);
 
         return { content: [{ type: "text", text: formatBatchDetail(batch) }] };
       } catch (err) {

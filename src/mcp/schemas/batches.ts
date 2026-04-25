@@ -37,9 +37,6 @@ export const ListBatchesSchema = z.object({
 
 export const GetBatchSchema = z.object({
   id: z.string().describe("Batch document ID (the _id field)."),
-  include: z.string().optional().describe(
-    "Comma-separated extra fields to include, e.g. 'recipe' to embed recipe details."
-  ),
 });
 
 export const UpdateBatchSchema = z.object({
