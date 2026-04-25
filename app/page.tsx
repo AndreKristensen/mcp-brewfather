@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { CopyPromptCard } from "@/components/ui/copy-prompt-card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { FlaskConical, Package, BookOpen, GitFork } from "lucide-react";
@@ -169,11 +170,7 @@ export default function Home() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {examplePrompts.map((prompt) => (
-              <Card key={prompt} size="sm">
-                <CardContent>
-                  <p className="text-sm text-muted-foreground italic">&ldquo;{prompt}&rdquo;</p>
-                </CardContent>
-              </Card>
+              <CopyPromptCard key={prompt} prompt={prompt} />
             ))}
           </div>
         </section>
