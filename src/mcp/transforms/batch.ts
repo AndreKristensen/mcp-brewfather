@@ -272,7 +272,7 @@ function formatBatchFermentable(f: BatchFermentable): string {
   const parts = [
     `  • ${f.name}`,
     `${formatWeight(f.amount)}`,
-    `${f.percentage.toFixed(1)}%`,
+    ...(f.percentage != null ? [`${f.percentage.toFixed(1)}%`] : []),
   ];
   if (f.color) parts.push(`${Math.round(f.color)} SRM`);
   if (f.use) parts.push(f.use);

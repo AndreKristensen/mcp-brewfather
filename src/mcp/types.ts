@@ -74,7 +74,7 @@ export interface BatchFermentable {
   _id?: string;
   name: string;
   amount: number;
-  percentage: number;
+  percentage: number | null;
   color: number;
   type: string;
   use: string | null;
