@@ -181,7 +181,7 @@ export function formatBatchDetail(batch: BatchDetail): string {
       // Add fermentation context if available
       const fermentation = batch.recipe?.fermentation;
       if (fermentation?.steps && fermentation.steps.length > 0) {
-        lines.push("Fermentation profile: " + fermentation.steps.map((s) => `${s.name} @ ${s.stepTemp}°C`).join(" → "));
+        lines.push("Fermentation profile: " + fermentation.steps.map((s) => `${s.type ?? s.name} @ ${s.stepTemp}°C`).join(" → "));
       }
       dryHops.forEach((h) => {
         const time = h.time != null ? ` — add @ day ${h.time} of fermentation` : "";
@@ -208,6 +208,7 @@ export function formatBatchDetail(batch: BatchDetail): string {
     lines.push("");
   }
 
+
   const miscs = batch.batchMiscs?.length > 0 ? batch.batchMiscs : null;
   const recipeMiscs = batch.recipe?.miscs ?? [];
 
@@ -229,9 +230,9 @@ export function formatBatchDetail(batch: BatchDetail): string {
   if (fermentation && fermentation.steps && fermentation.steps.length > 0) {
     lines.push("### Fermentation Profile: " + fermentation.name);
     fermentation.steps.forEach((s) => {
-      const ramp = s.rampTime ? ` (ramp: ${s.rampTime}h)` : "";
+      const ramp = s.ramp ? ` (ramp: ${s.ramp}h)` : "";
       const duration = s.stepTime ? ` for ${s.stepTime} day${s.stepTime !== 1 ? "s" : ""}` : "";
-      lines.push(`  • ${s.name}: ${formatTemp(s.stepTemp)}${duration}${ramp}`);
+      lines.push(`  • ${s.type ?? s.name}: ${formatTemp(s.stepTemp)}${duration}${ramp}`);
     });
     lines.push("");
   }
@@ -243,9 +244,10 @@ export function formatBatchDetail(batch: BatchDetail): string {
     lines.push("");
   }
 
-  if (batch.notes?.length > 0) {
+  const logEntries = batch.notes?.filter((n) => n.note) ?? [];
+  if (logEntries.length > 0) {
     lines.push("### Log Entries");
-    batch.notes.forEach((note) => {
+    logEntries.forEach((note) => {
       const ts = formatDate(note.timestamp);
       const status = note.status ? ` [${note.status}]` : "";
       lines.push(`${ts}${status}: ${note.note}`);
@@ -261,7 +263,10 @@ export function formatBatchDetail(batch: BatchDetail): string {
 
   if (batch.events?.length > 0) {
     lines.push("### Events");
-    batch.events.forEach((e) => lines.push(`  • ${formatDate(e.date)}: ${e.message}`));
+    batch.events.forEach((e) => {
+      const label = e.eventText ?? e.description ?? e.title;
+      lines.push(`  • ${formatDateShort(e.time)}: ${label}`);
+    });
     lines.push("");
   }
 

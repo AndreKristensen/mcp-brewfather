@@ -201,9 +201,9 @@ function formatMashStep(s: MashStep): string {
 }
 
 function formatFermentationStep(s: FermentationStep): string {
-  const ramp = s.rampTime ? ` (ramp: ${s.rampTime}h)` : "";
+  const ramp = s.ramp ? ` (ramp: ${s.ramp}h)` : "";
   const duration = s.stepTime ? ` for ${s.stepTime} day${s.stepTime !== 1 ? "s" : ""}` : "";
-  return `  • ${s.name}: ${formatTemp(s.stepTemp)}${duration}${ramp}`;
+  return `  • ${s.type ?? s.name}: ${formatTemp(s.stepTemp)}${duration}${ramp}`;
 }
 
 export function formatRecipeList(recipes: RecipeSummary[]): string {

@@ -143,8 +143,12 @@ export interface BatchMeasurement {
 
 export interface BatchEvent {
   _id?: string;
-  date: number;
-  message: string;
+  time: number;
+  title: string;
+  description: string | null;
+  eventText: string | null;
+  eventType: string | null;
+  active: boolean;
 }
 
 export interface RecipeSummary {
@@ -349,11 +353,11 @@ export interface FermentationProfile {
 }
 
 export interface FermentationStep {
-  name: string;
+  name: string | null;
   stepTemp: number;
   stepTime: number;
   type: string;
-  rampTime: number | null;
+  ramp: number | null;
 }
 
 export interface WaterProfile {
