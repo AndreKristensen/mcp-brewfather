@@ -171,7 +171,10 @@ export class BrewfatherClient {
     type: InventoryType,
     params: InventoryListParams = {}
   ): Promise<InventoryItem[]> {
-    const qs = this.buildQuery(params as Record<string, unknown>);
+    const effective = (params.inventory_exists != null || params.inventory_negative != null)
+      ? { ...params, complete: true }
+      : params;
+    const qs = this.buildQuery(effective as Record<string, unknown>);
     return this.request<InventoryItem[]>(`/inventory/${type}${qs}`);
   }
 
