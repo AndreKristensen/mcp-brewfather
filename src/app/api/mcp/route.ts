@@ -1,10 +1,10 @@
 import { NextRequest } from 'next/server';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { WebStandardStreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js';
-import { BrewfatherClient } from '@/src/mcp/client';
-import { registerBatchTools } from '@/src/mcp/tools/batches';
-import { registerRecipeTools } from '@/src/mcp/tools/recipes';
-import { registerInventoryTools } from '@/src/mcp/tools/inventory';
+import { BrewfatherClient } from '@/mcp/client';
+import { registerBatchTools } from '@/mcp/tools/batches';
+import { registerRecipeTools } from '@/mcp/tools/recipes';
+import { registerInventoryTools } from '@/mcp/tools/inventory';
 import { verifyToken } from '@/lib/auth';
 
 const MCP_AUTH_TOKEN = process.env.MCP_AUTH_TOKEN;
