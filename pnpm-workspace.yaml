@@ -3,3 +3,6 @@ ignoredBuiltDependencies:
   - msw
   - sharp
   - unrs-resolver
+
+overrides:
+  "@next/env": "npm:@varlock/nextjs-integration"
