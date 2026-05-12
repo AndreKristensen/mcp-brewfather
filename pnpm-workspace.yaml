@@ -1,8 +1,16 @@
-ignoredBuiltDependencies:
-  - esbuild
-  - msw
-  - sharp
-  - unrs-resolver
 
 overrides:
   "@next/env": "npm:@varlock/nextjs-integration"
+
+allowBuilds:
+  esbuild: true
+  sharp: true
+  unrs-resolver: true
+  msw: true
+
+minimumReleaseAge: 10080
+preferFrozenLockfile: true
+strictDepBulds: true
+blockExoticSubdeps: true
+trustPolicy: no-downgrade
+trustPolicyIgnoreAfter: 10080

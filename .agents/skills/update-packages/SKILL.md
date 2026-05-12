@@ -6,7 +6,6 @@ description: >
   "check for updates", "pnpm outdated", "upgrade dependencies",
   "what packages are outdated", or "update my npm packages".
 argument-hint: "[patch|minor|major]"
-allowed-tools: [Bash, WebFetch, Read]
 ---
 
 # Update Packages with pnpm
@@ -138,7 +137,62 @@ Source: https://github.com/owner/repo/releases
 
 Truncate release notes that are excessively long (keep the first ~50 lines per release and add "… (see full release notes at SOURCE_URL)").
 
-## Step 5 — Confirm and run the update
+### Breaking changes
+
+Scan each release's notes for breaking changes. If any are found, surface them **before** the full release notes with a prominent callout block:
+
+```
+> ⚠ BREAKING CHANGES in vX.Y.Z
+> - <breaking change 1>
+> - <breaking change 2>
+```
+
+Signals to scan for: headings or text containing "breaking", "BREAKING CHANGE", "migration", "removed", "deprecated API", or major semver bumps with behavioral caveats. When in doubt, flag it.
+
+## Step 5 — Write changelog log file
+
+Before asking to confirm the update, write a log file so the user has a record to review.
+
+**Determine the scope label** from the highest bump type among the packages being updated:
+- Any major update → `major`
+- Any minor update (no major) → `minor`
+- All patches → `patch`
+
+**File path:** `package-changelog/{yyyy-mm-dd}-{scope}.md` relative to the project root (the directory containing `package.json`).
+
+If a file with that name already exists, **append** the new update session to it rather than creating a new file. Add a `---` separator and a new `## Updated packages` + `## Changelogs` section below the existing content.
+
+Ensure the `package-changelog/` directory exists by running `mkdir -p package-changelog` first.
+
+**File content format:**
+
+```markdown
+# Package Update — {yyyy-mm-dd} ({scope})
+
+## Updated packages
+
+| Package | From | To | Type |
+|---------|------|----|------|
+| package-name | 1.2.3 | 1.2.6 | patch |
+
+## Changelogs
+
+---
+
+### package-name  1.2.3 → 1.2.6
+
+<!-- If breaking changes exist, add this block first: -->
+> ⚠ BREAKING CHANGES
+> - <breaking change 1>
+
+...release notes (same content shown to user, untruncated)...
+
+---
+```
+
+After writing the file, tell the user: `Changelog written to package-changelog/{filename}` and then ask to confirm the update.
+
+## Step 6 — Confirm and run the update
 
 After displaying all changelogs, ask the user to confirm before touching anything:
 
@@ -159,6 +213,23 @@ Split the list into two separate `pnpm update` calls if needed: one without `--l
 After the update completes, run `pnpm outdated --json 2>&1` again and confirm the updated packages no longer appear.
 
 Remind the user to run their test suite if any major updates were applied.
+
+## Step 7 — Suggest a git commit message
+
+After a successful update, output a ready-to-use git commit message in a code block:
+
+```
+chore(deps): update {scope} dependencies ({date})
+
+- package-name: 1.2.3 → 1.2.6
+- package-name: 1.0.0 → 1.0.4
+```
+
+Rules:
+- Subject line: `chore(deps): update {scope} dependencies ({yyyy-mm-dd})`
+- Body: one bullet per package in the format `- {name}: {old} → {new}`
+- If multiple bump types are included, use the highest as the scope label
+- Keep it copy-paste ready — no extra explanation around the code block
 
 ## Edge cases
 
